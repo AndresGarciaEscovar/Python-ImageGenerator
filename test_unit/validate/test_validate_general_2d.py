@@ -2,7 +2,6 @@
     File that contains the unit test for the functions in the file
     validate_general_2d.py.
 """
-import random
 
 # ##############################################################################
 # Imports
@@ -11,6 +10,7 @@ import random
 
 # General
 import numpy as np
+import random
 import unittest
 
 from typing import Union
