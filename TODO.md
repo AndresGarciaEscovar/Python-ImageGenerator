@@ -8,6 +8,8 @@
 
 ### DO NEXT
 
+- Create a README.md file
+
 ### TODO LIST!
 
 ##  REMEMBER!
