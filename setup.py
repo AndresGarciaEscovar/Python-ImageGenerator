@@ -15,7 +15,7 @@ from setuptools import setup
 
 # List with required packages.
 REQUIRED = [
-    "numpy",
+    "numpy==1.26.0",
 ]
 
 # ##############################################################################
