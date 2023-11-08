@@ -31,7 +31,7 @@ setup(
     ),
     install_requires=REQUIRED,
     license="MIT",
-    name="latex_shapes",
+    name="shapesLaTeX",
     package_dir={"": "src"},
     version="0.0.1",
 )

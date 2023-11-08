@@ -1,7 +1,0 @@
-Metadata-Version: 2.1
-Name: latex-shapes
-Version: 0.0.1
-Summary: Package that contains various functions to generate LaTeX code for several shapes.
-Author: Andres Garcia Escovar
-Author-email: andrumen@hotmail.com
-License: MIT
