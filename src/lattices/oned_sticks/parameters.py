@@ -27,32 +27,33 @@ import src.validate.validate_properties as vproperties
 # Dictionary structure with the keys and types of the parameters.
 _TEMPLATE = {
     "box": {
-      "position_top": list,
-      "height": (float, int),
-      "width": (float, int),
+        "position_top": list,
+        "height": (float, int),
+        "width": (float, int),
     },
     "box_label": {
-      "height": (float, int),
-      "width": (float, int),
+        "height": (float, int),
+        "width": (float, int),
     },
     "lattice": {
-      "offsets": list,
-      "position_end": list,
-      "position_start": list,
-      "vertical_spacing": (float, int),
+        "offsets": list,
+        "position_end": list,
+        "position_start": list,
+        "vertical_spacing": (float, int),
     },
     "lattice_elements": {
-      "arrow_height": (float, int),
-      "circle_radius": (float, int),
-      "tick_height": (float, int),
-      "vacancies_visible": bool
+        "arrow_height": (float, int),
+        "circle_radius": (float, int),
+        "tick_height": (float, int),
+        "vacancies_visible": bool
     },
     "lattice_parameters": {
-      "nticks": int,
-      "adsorbing": list,
-      "desorbing": list,
-      "fixed": list,
-      "jumping": list,
+        "nmers": int,
+        "nticks": int,
+        "adsorbing": list,
+        "desorbing": list,
+        "fixed": list,
+        "jumping": list,
     }
 }
 
@@ -371,6 +372,12 @@ def _validate_params_lattice_parameters(parameters: dict,) -> None:
     """
     # Dictionary with the keys and types of the parameters.
     kargs = {
+        "nmers": {
+            "value": parameters["nmers"],
+            "zero": False,
+            "name": "lattice_parameters[\"nmers\"]",
+            "texcept": True
+        },
         "nticks": {
             "value": parameters["nticks"],
             "zero": False,
@@ -397,18 +404,42 @@ def _validate_params_lattice_parameters(parameters: dict,) -> None:
         },
         "jumping": {
             "value": parameters["jumping"],
-            "dtype": int,
+            "dtype": Any,
             "name": "lattice_parameters[\"jumping\"]",
             "texcept": True
         },
     }
 
     # Validate the parameters.
+    vproperties.validate_int_positive(**kargs["nmers"])
     vproperties.validate_int_positive(**kargs["nticks"])
     vproperties.validate_list(**kargs["adsorbing"])
     vproperties.validate_list(**kargs["desorbing"])
     vproperties.validate_list(**kargs["fixed"])
     vproperties.validate_list(**kargs["jumping"])
+
+    # N-mers must be less than or equal to the number of ticks.
+    if parameters["nmers"] > parameters["nticks"]:
+        raise ValueError(
+            f"The number of ticks must be greater than or equal to the "
+            f"number of n-mers. Current values: {parameters['nticks'] = }, "
+            f"{parameters['nmers'] = }."
+        )
+
+    # The adsorbing, desorbing and fixed lists must be between 0 and nticks.
+    for key in {"adsorbing", "desorbing", "fixed"}:
+        # No need to check.
+        if len(parameters[key]) == 0:
+            continue
+
+        # Exceptions must be raised.
+        threshold = parameters['nticks'] - (parameters["nmers"] - 1)
+        if not all(0 <= x < parameters["nticks"] for x in parameters[key]):
+            raise ValueError(
+                f"The values of the lattice parameter \"{key}\" must be in the "
+                f"lattice, i.e., between 0 and {threshold}. Current values: "
+                f"{parameters[key]}."
+            )
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -434,6 +465,7 @@ def get() -> dict:
     """
     with files(src.__name__).joinpath("parameters.yaml").open() as file:
         return yaml.safe_load(file)
+
 
 # ------------------------------------------------------------------------------
 # 'validate' Functions
