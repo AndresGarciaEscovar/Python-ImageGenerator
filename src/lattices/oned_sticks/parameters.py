@@ -23,6 +23,7 @@ import src.lattices.oned_sticks as src
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+# Dictionary structure with the keys and types of the parameters.
 _TEMPLATE = {
     "box": {
       "position_top": list,
