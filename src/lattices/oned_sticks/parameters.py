@@ -441,6 +441,13 @@ def _validate_params_lattice_parameters(parameters: dict,) -> None:
                 f"{parameters[key]}."
             )
 
+        # Arrays must have unique elements.
+        if len(set(parameters[key])) != len(parameters[key]):
+            raise ValueError(
+                f"The values of the lattice parameter \"{key}\" must be unique. "
+                f"Current values: {parameters[key]}."
+            )
+
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Public Interface
