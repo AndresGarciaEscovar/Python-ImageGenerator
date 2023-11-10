@@ -9,6 +9,12 @@
 
 
 # General
+import yaml
+
+from importlib.resources import files
+
+# User defined
+import src.lattices.oned_sticks as src
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -196,6 +202,7 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
             f"\"box[\'height\']\" = {box['height']}."
         )
 
+
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Public Interface
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -205,6 +212,20 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
 # Functions
 # ##############################################################################
 
+
+# ------------------------------------------------------------------------------
+# 'get' Functions
+# ------------------------------------------------------------------------------
+
+
+def get() -> dict:
+    """
+        Gets the dictionary with the default parameters.
+
+        :return: The dictionary with the default parameters.
+    """
+    with files(src.__name__).joinpath("parameters.yaml").open() as file:
+        return yaml.safe_load(file)
 
 # ------------------------------------------------------------------------------
 # 'validate' Functions
@@ -218,6 +239,8 @@ def validate(configuration: dict) -> None:
 
         :param configuration: The configuration of the lattice.
     """
+    print(configuration)
+
     # Validate the configuration.
     _validate_params_box(configuration["box"])
     _validate_params_box_label(configuration["box"], configuration["box_label"])
