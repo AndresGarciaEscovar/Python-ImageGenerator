@@ -63,6 +63,7 @@ lattice_elements:
   tick_height: 3.0
   vacancies_visible: True
 lattice_parameters:
+  nmers: 1
   nticks: 10
   adsorbing: [ ]
   desorbing: [ ]
