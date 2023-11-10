@@ -99,6 +99,83 @@ def _validate_real_parameters(zero: Any, texcept: Any) -> None:
 # ------------------------------------------------------------------------------
 
 
+def validate_bool(value: Any, name: str = None,  texcept: bool = False) -> bool:
+    """
+        Function that validates that the value is a boolean quantity.
+        Raises an exception if validation fails and texcept is True.
+
+        :param value: The value to validate.
+
+        :param name: The name of the variable.
+
+        :param texcept: A boolean flag that indicates if an exception should be
+         raised if the object is not the expected type. True, if an exception
+         should be raised; False, otherwise. False, by default.
+
+        :return: True, if the object is a boolean variable; False,
+         otherwise.
+
+        :raises TypeError: If the object is not a real positive number and
+         texcept is True.
+    """
+    # Validate the value.
+    if not (flag := isinstance(value, bool)) and texcept:
+        tname = " " if name is None else f" \"{name}\" "
+        raise TypeError(
+            f"The value{tname}is not a boolean variable. Current type: "
+            f"{type(value)}."
+        )
+
+    return flag
+
+
+def validate_int_positive(
+    value: Any, zero: bool = True, name: str = None,  texcept: bool = False
+) -> bool:
+    """
+        Function that validates that the value is an integer positive number.
+        Raises an exception if validation fails and texcept is True.
+
+        :param value: The value to validate.
+
+        :param zero: The value can be zero. True, if the value can be zero;
+         False, otherwise. True, by default.
+
+        :param name: The name of the variable.
+
+        :param texcept: A boolean flag that indicates if an exception should be
+         raised if the object is not the expected type. True, if an exception
+         should be raised; False, otherwise. False, by default.
+
+        :return: True, if the object is an integer positive number; False,
+         otherwise.
+
+        :raises TypeError: If the object is not an integer positive number and
+         texcept is True.
+    """
+    # Validate the parameters.
+    _validate_real_parameters(zero, texcept)
+
+    # Validate the value.
+    flag = isinstance(value, int)
+    message = "" if flag else "The value is not an integer number. "
+
+    # Check that the value is positive.
+    if flag:
+        flag = value >= 0 if zero else value > 0
+        message += "" if flag else f"The value is not positive. "
+
+    # Raise an exception if required.
+    if texcept and not flag:
+        tname = " " if name is None else f" \"{name}\" "
+        raise TypeError(
+            f"The value{tname}is not an integer positive number. Current "
+            f"value: {value}. {message}".strip()
+        )
+
+    return flag
+
+
 def validate_list(
     value: Any, dtype: Any, length: int = -1, name: str = None,
     texcept: bool = False
@@ -155,7 +232,7 @@ def validate_list(
     return flag
 
 
-def validate_real_positve(
+def validate_real_positive(
     value: Any, zero: bool = True, name: str = None,  texcept: bool = False
 ) -> bool:
     """
