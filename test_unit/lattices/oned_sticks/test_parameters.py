@@ -1,9 +1,21 @@
+"""
+    File that contains the unit test for the functions in the file
+    validate_general_1d.py.
+"""
 
-from pathlib import Path
+# ##############################################################################
+# Imports
+# ##############################################################################
 
-import src.lattices.oned_sticks.parameters as lparams
 
-print("\nTesting parameters.py")
-configuration = lparams.get()
-lparams.validate(configuration)
-print("\nDone testing parameters.py")
+# General
+import numpy as np
+import unittest
+
+# User defined
+import src.validate.validate_general as vgeneral
+
+
+# ##############################################################################
+# Classes
+# ##############################################################################
