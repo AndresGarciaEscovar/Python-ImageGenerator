@@ -12,6 +12,7 @@
 import yaml
 
 from importlib.resources import files
+from typing import Any
 
 # User defined
 import src.lattices.oned_sticks as src
@@ -22,6 +23,38 @@ import src.lattices.oned_sticks as src
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+_TEMPLATE = {
+    "box": {
+      "position_top": list,
+      "height": (float, int),
+      "width": (float, int),
+    },
+    "box_label": {
+      "height": (float, int),
+      "width": (float, int),
+    },
+    "lattice": {
+      "offsets": list,
+      "position_end": list,
+      "position_start": list,
+      "vertical_spacing": (float, int),
+    },
+    "lattice_elements": {
+      "arrow_height": (float, int),
+      "circle_radius": (float, int),
+      "tick_height": (float, int),
+      "vacancies_visible": bool
+    },
+    "lattice_parameters": {
+      "nticks": int,
+      "adsorbing": list,
+      "desorbing": list,
+      "fixed": list,
+      "jumping": list,
+    }
+}
+
+
 # ##############################################################################
 # Functions
 # ##############################################################################
@@ -30,6 +63,61 @@ import src.lattices.oned_sticks as src
 # ------------------------------------------------------------------------------
 # '_validate' Functions
 # ------------------------------------------------------------------------------
+
+def _validate_general(dictionary: Any) -> None:
+    """
+        Validates the general structure of the dictionary.
+
+        :param dictionary: The object to be validated.
+
+        :raise TypeError: If the entries in the dictionary are not the correct
+         type.
+
+        :raise ValueError: If the values of the dictionary are not valid.
+    """
+    # Global variables.
+    global _TEMPLATE
+
+    # Must be a dictionary.
+    if not isinstance(dictionary, dict):
+        raise TypeError(
+            f"The object being validated must be a dictionary. Current type: "
+            f"{type(dictionary)}."
+        )
+
+    # Keys of the dictionary.
+    keys = set(_TEMPLATE.keys())
+    if keys != set(dictionary.keys()):
+        raise ValueError(
+            f"The first level of the dictionary must have the following keys: "
+            f"{keys}. Current keys: {set(dictionary.keys())}."
+        )
+
+    # Validate the entries of the dictionary.
+    for key, value in dictionary.items():
+        # Check they are dictionaries.
+        if not isinstance(value, dict):
+            raise TypeError(
+                f"The entries of the dictionary must be dictionaries. Current "
+                f"type: {type(value)}."
+            )
+
+        # Check the keys of the dictionary.
+        if set(value.keys()) != set(_TEMPLATE[key].keys()):
+            raise ValueError(
+                f"The second level of the dictionary with key \"{key}\" must "
+                f"have the following keys: {set(_TEMPLATE[key].keys())}. "
+                f"Current keys: {set(value.keys())}."
+            )
+
+        # Check the types of the values of the dictionary.
+        for key0, value0 in value.items():
+            if not isinstance(value0, _TEMPLATE[key][key0]):
+                raise TypeError(
+                    f"The value of the entry with key \"{key0}\" of the "
+                    f"dictionary with key \"{key}\" must be of type "
+                    f"{_TEMPLATE[key][key0]}. Current type: {type(value0)}."
+                )
 
 
 def _validate_params_box(box: dict) -> None:
@@ -42,44 +130,12 @@ def _validate_params_box(box: dict) -> None:
 
         :raise ValueError: If the box parameter values are not valid.
     """
-    # Check the position_top variable is a list of 2 positions.
-    value = box["position_top"]
-
-    if not isinstance(value, list):
-        raise TypeError(
-            f"The box parameter \"position_top\" must be a list. Current type: "
-            f"{type(value)}."
-        )
-
-    if len(value) != 2:
-        raise ValueError(
-            f"The box parameter \"position_top\" must be a list of 2 "
-            f"positions. Current length: {len(value)}."
-        )
-
-    if not all(isinstance(position, (int, float)) for position in value):
-        raise TypeError(
-            f"The box parameter \"position_top\" must be a list of 2 "
-            f"positions, i.e., two real numbers. Types: "
-            f"{[type(position) for position in value]}."
-        )
-
-    # Check the width and height variables are positive real numbers.
-    for vtype in ("width", "height"):
-        value = box[vtype]
-
-        if not isinstance(value, (int, float)):
-            raise TypeError(
-                f"The box parameter \"{vtype}\" must be a real number. Current "
-                f"type: {type(value)}."
-            )
-
-        if value <= 0:
-            raise ValueError(
-                f"The box parameter \"{vtype}\" must be a positive real "
-                f"number, i.e. a real number greater than zero. Current value: "
-                f"{value}."
-            )
+    # Dictionary with the keys and types of the parameters.
+    box = {
+        "position_top": list,
+        "height": (float, int),
+        "width": (float, int),
+    }
 
 
 def _validate_params_box_label(box: dict, box_labels: dict) -> None:
@@ -94,11 +150,19 @@ def _validate_params_box_label(box: dict, box_labels: dict) -> None:
 
         :raise ValueError: If the box label parameter values are not valid.
     """
+    # Keys.
+    keys = {"height", "width"}
+    if set(box_labels.keys()) != keys:
+        raise ValueError(
+            f"The box_label parameters must have the following keys: {keys}. "
+            f"Current keys: {set(box_labels.keys())}."
+        )
+
     # Check the width and height variables are positive real numbers.
-    for vvalue in ("height", "width"):
+    for vvalue in keys:
         value = box_labels[vvalue]
 
-        if not isinstance(value, (int, float)):
+        if not isinstance(value, (float, int)):
             raise TypeError(
                 f"The box_label parameter \"{vvalue}\" must be a real number. "
                 f"Current type: {type(value)}."
@@ -131,8 +195,16 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
 
         :raise ValueError: If the lattice parameters values are not valid.
     """
+    # Keys.
+    keys = {"offsets", "position_end", "position_start", "vertical_spacing"}
+    if set(lattice.keys()) != keys:
+        raise ValueError(
+            f"The lattice parameters must have the following keys: {keys}. "
+            f"Current keys: {set(lattice.keys())}."
+        )
+
     # Check the parameters are lists of real numbers, of length 2.
-    for vtype in ("offsets", "position_end", "position_start"):
+    for vtype in {"offsets", "position_end", "position_start"}:
         value = lattice[vtype]
 
         if not isinstance(value, list):
@@ -147,7 +219,7 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
                 f"entries. Current length: {len(value)}."
             )
 
-        if not all(isinstance(entry, (int, float)) for entry in value):
+        if not all(isinstance(entry, (float, int)) for entry in value):
             raise TypeError(
                 f"The lattice parameter \"{vtype}\" must be a list of 2 "
                 f"entries, i.e., two real numbers. Types: "
@@ -164,7 +236,7 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
     # Check that the vertical spacing is a positive real number.
     value = lattice["vertical_spacing"]
 
-    if not isinstance(value, (int, float)):
+    if not isinstance(value, (float, int)):
         raise TypeError(
             f"The lattice parameter \"vertical_spacing\" must be a real "
             f"number. Current type: {type(value)}."
@@ -200,6 +272,87 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
             f"Current values are: \"position_start[1]\" = "
             f"{pstr[1]}, \"position_end[1]\" = {pend[1]} and "
             f"\"box[\'height\']\" = {box['height']}."
+        )
+
+    # ------------ Validate offsets with respect to start and end ------------ #
+
+    offset_l = lattice["offsets"][0]
+    offset_r = lattice["offsets"][1]
+
+    if (apos := pstr[0] + offset_l) >= (bpos := pend[0] - offset_r):
+        raise ValueError(
+            f"The position of the left offset exceeds or is the same as that "
+            f"of the right offset. That is, {apos:.5f} >= {bpos:.5f}; where "
+            f"offset_l is \"pstr[0] + lattice['offsets'][0]\" and offset_r is "
+            f"\"pend[0] - lattice['offsets'][1]\"."
+        )
+
+
+def _validate_params_lattice_elements(elements: dict) -> None:
+    """
+        Validates that the lattice elements are consistent with the lattice
+        parameters.
+
+        :param elements: The lattice elements.
+
+        :raise TypeError: If the lattice elements are not the correct type.
+
+        :raise ValueError: If the lattice elements don't have correct values.
+    """
+    # Keys.
+    keys = {"arrow_height", "circle_radius", "tick_height", "vacancies_visible"}
+    if set(elements.keys()) != keys:
+        raise ValueError(
+            f"The lattice elements must have the following keys: {keys}. "
+            f"Current keys: {set(elements.keys())}."
+        )
+
+    # Validate all the elements.
+    for vtype in keys:
+        # Variable value.
+        value = elements[vtype]
+
+        # Validate the value is a boolean value.
+        if vtype == "vacancies_visible":
+            if not isinstance(value, bool):
+                raise TypeError(
+                    f"The lattice element \"{vtype}\" must be a boolean. "
+                    f"Current type: {type(value)}."
+                )
+            continue
+
+        # Validate the value is a positive real number.
+        if not isinstance(value, (float, int)):
+            raise TypeError(
+                f"The lattice element \"{vtype}\" must be a real number. "
+                f"Current type: {type(value)}."
+            )
+
+        if value <= 0:
+            raise ValueError(
+                f"The lattice element \"{vtype}\" must be a positive real "
+                f"number, i.e. a real number greater than zero. Current value: "
+                f"{value}."
+            )
+
+
+def validate_params_lattice_parameters(parameters: dict,) -> None:
+    """
+        Validates the parameters of the lattice, i.e., the parameters that
+        define the position of the elements of the particles.
+
+        :param parameters: The parameters of the lattice.
+
+        :raise TypeError: If the parameters are not the correct type.
+
+        :raise ValueError: If the parameters don't have correct values.
+    """
+    # Keys.
+    keys = {"nticks", "adsorbing", "desorbing", "fixed", "jumping"}
+    if set(parameters.keys()) != keys:
+        raise ValueError(
+            f"The lattice parameters must have the following keys: {keys}. "
+            f"Current keys: {set(parameters.keys())}."
         )
 
 
@@ -239,9 +392,12 @@ def validate(configuration: dict) -> None:
 
         :param configuration: The configuration of the lattice.
     """
-    print(configuration)
+    # Validate general parameters.
+    _validate_general(configuration)
 
     # Validate the configuration.
     _validate_params_box(configuration["box"])
-    _validate_params_box_label(configuration["box"], configuration["box_label"])
-    _validate_params_lattice(configuration["box"], configuration["lattice"])
+    # _validate_params_box_label(configuration["box"], configuration["box_label"])
+    # _validate_params_lattice(configuration["box"], configuration["lattice"])
+    # _validate_params_lattice_elements(configuration["lattice_elements"])
+
