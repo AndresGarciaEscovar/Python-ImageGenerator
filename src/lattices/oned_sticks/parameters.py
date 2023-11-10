@@ -16,6 +16,7 @@ from typing import Any
 
 # User defined
 import src.lattices.oned_sticks as src
+import src.validate.validate_properties as vproperties
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -132,11 +133,32 @@ def _validate_params_box(box: dict) -> None:
         :raise ValueError: If the box parameter values are not valid.
     """
     # Dictionary with the keys and types of the parameters.
-    box = {
-        "position_top": list,
-        "height": (float, int),
-        "width": (float, int),
+    kargs = {
+        "position_top": {
+            "value": box["position_top"],
+            "dtype": (int, float),
+            "length": 2,
+            "name": "box[\"position_top\"]",
+            "texcept": True
+        },
+        "height": {
+            "value": box["height"],
+            "zero": False,
+            "name": "box[\"height\"]",
+            "texcept": True
+        },
+        "width": {
+            "value": box["width"],
+            "zero": False,
+            "name": "box[\"width\"]",
+            "texcept": True
+        },
     }
+
+    # Validate the parameters.
+    vproperties.validate_list(**kargs["position_top"])
+    vproperties.validate_real_positive(**kargs["height"])
+    vproperties.validate_real_positive(**kargs["width"])
 
 
 def _validate_params_box_label(box: dict, box_labels: dict) -> None:
@@ -151,37 +173,40 @@ def _validate_params_box_label(box: dict, box_labels: dict) -> None:
 
         :raise ValueError: If the box label parameter values are not valid.
     """
-    # Keys.
-    keys = {"height", "width"}
-    if set(box_labels.keys()) != keys:
+    # Dictionary with the keys and types of the parameters.
+    kargs = {
+        "height": {
+            "value": box_labels["height"],
+            "zero": True,
+            "name": "box_labels[\"height\"]",
+            "texcept": True
+        },
+        "width": {
+            "value": box_labels["width"],
+            "zero": True,
+            "name": "box_labels[\"width\"]",
+            "texcept": True
+        },
+    }
+
+    # Validate the parameter values.
+    vproperties.validate_real_positive(**kargs["height"])
+    vproperties.validate_real_positive(**kargs["width"])
+
+    # Check the box label fits in the box.
+    if box_labels["height"] > box["height"]:
         raise ValueError(
-            f"The box_label parameters must have the following keys: {keys}. "
-            f"Current keys: {set(box_labels.keys())}."
+            f"The height of the label box must be less than or equal to the "
+            f"height of the box. Current values: {box['height'] = }, "
+            f"{box_labels['height'] = }."
         )
 
-    # Check the width and height variables are positive real numbers.
-    for vvalue in keys:
-        value = box_labels[vvalue]
-
-        if not isinstance(value, (float, int)):
-            raise TypeError(
-                f"The box_label parameter \"{vvalue}\" must be a real number. "
-                f"Current type: {type(value)}."
-            )
-
-        if value <= 0:
-            raise ValueError(
-                f"The box_label parameter \"{vvalue}\" must be a positive real "
-                f"number, i.e. a real number greater than zero. Current value: "
-                f"{value}."
-            )
-
-        if value > box[vvalue]:
-            raise ValueError(
-                f"The box_label parameter \"{vvalue}\" must be less than or "
-                f"equal to the box parameter \"height\". Current values: "
-                f"{value}, {box[vvalue]}."
-            )
+    if box_labels["width"] > box["width"]:
+        raise ValueError(
+            f"The width of the label box must be less than or equal to the "
+            f"width of the box. Current values: {box['width'] = }, "
+            f"{box_labels['width'] = }."
+        )
 
 
 def _validate_params_lattice(box: dict, lattice: dict) -> None:
@@ -196,59 +221,58 @@ def _validate_params_lattice(box: dict, lattice: dict) -> None:
 
         :raise ValueError: If the lattice parameters values are not valid.
     """
-    # Keys.
-    keys = {"offsets", "position_end", "position_start", "vertical_spacing"}
-    if set(lattice.keys()) != keys:
-        raise ValueError(
-            f"The lattice parameters must have the following keys: {keys}. "
-            f"Current keys: {set(lattice.keys())}."
-        )
+    # Dictionary with the keys and types of the parameters.
+    kargs = {
+        "offsets": {
+            "value": lattice["offsets"],
+            "dtype": (int, float),
+            "length": 2,
+            "name": "lattice[\"offsets\"]",
+            "texcept": True
+        },
+        "position_end": {
+            "value": lattice["position_end"],
+            "dtype": (int, float),
+            "length": 2,
+            "name": "lattice[\"position_end\"]",
+            "texcept": True
+        },
+        "position_start": {
+            "value": lattice["position_start"],
+            "dtype": (int, float),
+            "length": 2,
+            "name": "lattice[\"position_start\"]",
+            "texcept": True
+        },
+        "vertical_spacing": {
+            "value": lattice["vertical_spacing"],
+            "zero": False,
+            "name": "lattice[\"vertical_spacing\"]",
+            "texcept": True
+        },
+    }
 
-    # Check the parameters are lists of real numbers, of length 2.
-    for vtype in {"offsets", "position_end", "position_start"}:
-        value = lattice[vtype]
+    # General validation.
+    vproperties.validate_list(**kargs["offsets"])
+    vproperties.validate_list(**kargs["position_end"])
+    vproperties.validate_list(**kargs["position_start"])
+    vproperties.validate_real_positive(**kargs["vertical_spacing"])
 
-        if not isinstance(value, list):
-            raise TypeError(
-                f"The lattice parameter \"{vtype}\" must be a list. Current "
-                f"type: {type(value)}."
-            )
+    # -------------------- Must have positive real numbers ------------------- #
 
-        if len(value) != 2:
+    # All numbers must be real and, possibly, zero.
+    falias = vproperties.validate_real_positive
+    for key in {"offsets", "position_end", "position_start"}:
+        kargs = {
+            "zero": True,
+            "texcept": False,
+        }
+
+        if not all(falias(value=x, **kargs) for x in lattice[key]):
             raise ValueError(
-                f"The lattice parameter \"{vtype}\" must be a list of 2 "
-                f"entries. Current length: {len(value)}."
+                f"The values of the lattice parameter \"{key}\" must be "
+                f"positive real numbers. Current values: {lattice[key]}."
             )
-
-        if not all(isinstance(entry, (float, int)) for entry in value):
-            raise TypeError(
-                f"The lattice parameter \"{vtype}\" must be a list of 2 "
-                f"entries, i.e., two real numbers. Types: "
-                f"{[type(entry) for entry in value]}."
-            )
-
-        if not all(entry >= 0 for entry in value):
-            raise ValueError(
-                f"The lattice parameter \"{vtype}\" must be a list of 2 "
-                f"positive valued entries. Current values: "
-                f"{value}."
-            )
-
-    # Check that the vertical spacing is a positive real number.
-    value = lattice["vertical_spacing"]
-
-    if not isinstance(value, (float, int)):
-        raise TypeError(
-            f"The lattice parameter \"vertical_spacing\" must be a real "
-            f"number. Current type: {type(value)}."
-        )
-
-    if value <= 0:
-        raise ValueError(
-            f"The lattice parameter \"vertical_spacing\" must be a positive "
-            f"real number, i.e. a real number greater than zero. Current "
-            f"value: {value}."
-        )
 
     # ------------------- Validate the position parameters ------------------- #
 
@@ -300,44 +324,41 @@ def _validate_params_lattice_elements(elements: dict) -> None:
 
         :raise ValueError: If the lattice elements don't have correct values.
     """
-    # Keys.
-    keys = {"arrow_height", "circle_radius", "tick_height", "vacancies_visible"}
-    if set(elements.keys()) != keys:
-        raise ValueError(
-            f"The lattice elements must have the following keys: {keys}. "
-            f"Current keys: {set(elements.keys())}."
-        )
+    # Dictionary with the keys and types of the parameters.
+    kargs = {
+        "arrow_height": {
+            "value": elements["arrow_height"],
+            "zero": False,
+            "name": "elements[\"arrow_height\"]",
+            "texcept": True
+        },
+        "circle_radius": {
+            "value": elements["circle_radius"],
+            "zero": False,
+            "name": "elements[\"circle_radius\"]",
+            "texcept": True
+        },
+        "tick_height": {
+            "value": elements["tick_height"],
+            "zero": False,
+            "name": "elements[\"tick_height\"]",
+            "texcept": True
+        },
+        "vacancies_visible": {
+            "value": elements["vacancies_visible"],
+            "name": "elements[\"vacancies_visible\"]",
+            "texcept": True
+        },
+    }
 
-    # Validate all the elements.
-    for vtype in keys:
-        # Variable value.
-        value = elements[vtype]
-
-        # Validate the value is a boolean value.
-        if vtype == "vacancies_visible":
-            if not isinstance(value, bool):
-                raise TypeError(
-                    f"The lattice element \"{vtype}\" must be a boolean. "
-                    f"Current type: {type(value)}."
-                )
-            continue
-
-        # Validate the value is a positive real number.
-        if not isinstance(value, (float, int)):
-            raise TypeError(
-                f"The lattice element \"{vtype}\" must be a real number. "
-                f"Current type: {type(value)}."
-            )
-
-        if value <= 0:
-            raise ValueError(
-                f"The lattice element \"{vtype}\" must be a positive real "
-                f"number, i.e. a real number greater than zero. Current value: "
-                f"{value}."
-            )
+    # Validate the parameters.
+    vproperties.validate_real_positive(**kargs["arrow_height"])
+    vproperties.validate_real_positive(**kargs["circle_radius"])
+    vproperties.validate_real_positive(**kargs["tick_height"])
+    vproperties.validate_bool(**kargs["vacancies_visible"])
 
 
-def validate_params_lattice_parameters(parameters: dict,) -> None:
+def _validate_params_lattice_parameters(parameters: dict,) -> None:
     """
         Validates the parameters of the lattice, i.e., the parameters that
         define the position of the elements of the particles.
@@ -348,13 +369,46 @@ def validate_params_lattice_parameters(parameters: dict,) -> None:
 
         :raise ValueError: If the parameters don't have correct values.
     """
-    # Keys.
-    keys = {"nticks", "adsorbing", "desorbing", "fixed", "jumping"}
-    if set(parameters.keys()) != keys:
-        raise ValueError(
-            f"The lattice parameters must have the following keys: {keys}. "
-            f"Current keys: {set(parameters.keys())}."
-        )
+    # Dictionary with the keys and types of the parameters.
+    kargs = {
+        "nticks": {
+            "value": parameters["nticks"],
+            "zero": False,
+            "name": "lattice_parameters[\"nticks\"]",
+            "texcept": True
+        },
+        "adsorbing": {
+            "value": parameters["adsorbing"],
+            "dtype": int,
+            "name": "lattice_parameters[\"adsorbing\"]",
+            "texcept": True
+        },
+        "desorbing": {
+            "value": parameters["desorbing"],
+            "dtype": int,
+            "name": "lattice_parameters[\"desorbing\"]",
+            "texcept": True
+        },
+        "fixed": {
+            "value": parameters["fixed"],
+            "dtype": int,
+            "name": "lattice_parameters[\"fixed\"]",
+            "texcept": True
+        },
+        "jumping": {
+            "value": parameters["jumping"],
+            "dtype": int,
+            "name": "lattice_parameters[\"jumping\"]",
+            "texcept": True
+        },
+    }
+
+    # Validate the parameters.
+    vproperties.validate_int_positive(**kargs["nticks"])
+    vproperties.validate_list(**kargs["adsorbing"])
+    vproperties.validate_list(**kargs["desorbing"])
+    vproperties.validate_list(**kargs["fixed"])
+    vproperties.validate_list(**kargs["jumping"])
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -398,7 +452,7 @@ def validate(configuration: dict) -> None:
 
     # Validate the configuration.
     _validate_params_box(configuration["box"])
-    # _validate_params_box_label(configuration["box"], configuration["box_label"])
-    # _validate_params_lattice(configuration["box"], configuration["lattice"])
-    # _validate_params_lattice_elements(configuration["lattice_elements"])
-
+    _validate_params_box_label(configuration["box"], configuration["box_label"])
+    _validate_params_lattice(configuration["box"], configuration["lattice"])
+    _validate_params_lattice_elements(configuration["lattice_elements"])
+    _validate_params_lattice_parameters(configuration["lattice_parameters"])
