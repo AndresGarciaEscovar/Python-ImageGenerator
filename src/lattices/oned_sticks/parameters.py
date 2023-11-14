@@ -67,6 +67,7 @@ _TEMPLATE = {
 # '_validate' Functions
 # ------------------------------------------------------------------------------
 
+
 def _validate_general(dictionary: Any) -> None:
     """
         Validates the general structure of the dictionary.
