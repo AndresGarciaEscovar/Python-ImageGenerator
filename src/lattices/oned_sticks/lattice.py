@@ -27,11 +27,46 @@ from src.lattices.oned_sticks import parameters
 
 
 # ------------------------------------------------------------------------------
-# '_get' Functions
+# '_validate' Functions
 # ------------------------------------------------------------------------------
 
 
-def _get_configuration() -> dict:
+def _validate_configuration(configuration: dict) -> dict:
+    """
+        Validates the configuration of the lattice.
+
+        :param configuration: The configuration of the lattice.
+    """
+    # Get the valid configuration.
+    vconfig = get_configuration()
+
+    # Change the values and check all keys are consistent.
+    for key in configuration.keys():
+        for key0, value0 in configuration[key].items():
+            vconfig[key][key0] = value0
+
+    # Validate the parameters.
+    parameters.validate(vconfig)
+
+    return vconfig
+
+
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Public Interface
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+# ##############################################################################
+# Functions
+# ##############################################################################
+
+
+# ------------------------------------------------------------------------------
+# 'get' Functions
+# ------------------------------------------------------------------------------
+
+
+def get_configuration() -> dict:
     """
         Gets the configuration of the lattice.
 
@@ -48,40 +83,6 @@ def _get_configuration() -> dict:
 
 
 # ------------------------------------------------------------------------------
-# '_validate' Functions
-# ------------------------------------------------------------------------------
-
-
-def _validate_configuration(configuration: dict) -> dict:
-    """
-        Validates the configuration of the lattice.
-
-        :param configuration: The configuration of the lattice.
-    """
-    # Get the valid configuration.
-    vconfig = _get_configuration()
-
-    # Change the values and check all keys are consistent.
-    for key in configuration.keys():
-        for key0, value0 in configuration[key].items():
-            vconfig[key][key0] = value0
-
-    # Validate the parameters.
-    parameters.validate(vconfig)
-
-    return vconfig
-
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# Public Interface
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-
-
-# ##############################################################################
-# Functions
-# ##############################################################################
-
-
-# ------------------------------------------------------------------------------
 # 'generate' Functions
 # ------------------------------------------------------------------------------
 
@@ -95,6 +96,6 @@ def generate(configuration: dict = None) -> str:
         :return: The lattice LaTeX code.
     """
     # Get the configuration.
-    config = _get_configuration() if configuration is None else configuration
+    config = get_configuration() if configuration is None else configuration
     config = _validate_configuration(config)
 
