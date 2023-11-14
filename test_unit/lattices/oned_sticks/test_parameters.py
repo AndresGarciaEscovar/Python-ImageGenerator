@@ -22,6 +22,7 @@ import src.lattices.oned_sticks.parameters as parameters
 # Classes
 # ##############################################################################
 
+
 class TestParameters(unittest.TestCase):
     """
         Class that contains the tests for the validation of the 1D Sticks
