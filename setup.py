@@ -35,7 +35,7 @@ setup(
     ),
     install_requires=REQUIRED,
     license="MIT",
-    name="shapesLaTeX",
-    package_dir={"": "src"},
+    name="latex_lattices",
+    package_dir={"": "igenerator"},
     version="0.0.1",
 )
