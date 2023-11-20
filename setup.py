@@ -16,8 +16,8 @@ from setuptools import setup
 
 # List with required packages.
 REQUIRED = [
-    "numpy==1.26.0",
-    "pyyaml==6.0",
+    "numpy==1.26.2",
+    "pyyaml==6.0.1",
 ]
 
 
