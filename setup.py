@@ -36,6 +36,6 @@ setup(
     install_requires=REQUIRED,
     license="MIT",
     name="latex_lattices",
-    package_dir={"": "igenerator"},
+    package_dir={"": "latexlattices"},
     version="0.0.1",
 )
