@@ -14,7 +14,7 @@ import numpy as np
 import unittest
 
 # User defined
-import src.validate.validate_general as vgeneral
+import latexlattices.validate.validate_general as vgeneral
 
 
 # ##############################################################################

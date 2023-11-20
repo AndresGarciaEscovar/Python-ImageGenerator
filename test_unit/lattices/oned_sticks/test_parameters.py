@@ -15,7 +15,7 @@ import unittest
 import yaml
 
 # User defined
-import src.lattices.oned_sticks.parameters as parameters
+import latexlattices.lattices.oned_sticks.parameters as parameters
 
 
 # ##############################################################################

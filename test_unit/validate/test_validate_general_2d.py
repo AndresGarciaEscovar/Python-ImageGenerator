@@ -17,7 +17,7 @@ import unittest
 from typing import Union
 
 # User defined
-import src.validate.validate_general_2d as vgeneral
+import latexlattices.validate.validate_general_2d as vgeneral
 
 
 # ##############################################################################
