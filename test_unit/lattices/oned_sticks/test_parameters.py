@@ -3,9 +3,9 @@
     validate_general_1d.py.
 """
 
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Imports
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 # General
@@ -18,9 +18,9 @@ import yaml
 import latexlattices.lattices.oned_sticks.parameters as parameters
 
 
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Classes
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 class TestParameters(unittest.TestCase):
@@ -43,24 +43,27 @@ class TestParameters(unittest.TestCase):
             Test the function get the dictionary. The test gets the dictionary
             and must validate all the parameters.
         """
-        path = pathlib.Path(__file__).parent.absolute() / "test_parameters.yaml"
-        with open(f"{path}") as fl:
+        name = "test_parameters.yaml"
+        path = pathlib.Path(__file__).parent.absolute() / name
+
+        with open(f"{path}", encoding="utf-8", mode="w") as fl:
             configuration = yaml.safe_load(fl)
 
         valid = configuration["valid"]
         invalid = configuration["invalid"]
+
         del configuration
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 0: Valid parameters must not throw an exception.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Check the valid parameters.
         parameters.validate(valid)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 1: Invalid parameters must throw an exception.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Check every invalid parameter.
         for key in valid.keys():
@@ -73,13 +76,11 @@ class TestParameters(unittest.TestCase):
                     testinvalid[key][subkey] = value
 
                     # Must get an exception.
-                    try:
-                        parameters.validate(testinvalid)
-                        self.assertTrue(
-                            False,
-                            f"A TypeError or ValueError must be thrown; thrown "
-                            f"by \"{key}.{subkey}\": {value}"
-                        )
+                    expected = (TypeError, ValueError)
+                    message = (
+                        f"A TypeError or ValueError must be thrown; thrown by "
+                        f"\"{key}.{subkey}\": {value}"
+                    )
 
-                    except (TypeError, ValueError):
-                        self.assertTrue(True)
+                    with self.assertRaises(expected, msg=message):
+                        parameters.validate(testinvalid)
