@@ -4,9 +4,9 @@
 """
 
 
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Imports
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 # General
@@ -19,9 +19,9 @@ from typing import Union
 import latexlattices.validate.validate_general_1d as vgeneral
 
 
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Classes
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 class TestValidateGeneral1D(unittest.TestCase):
@@ -36,39 +36,39 @@ class TestValidateGeneral1D(unittest.TestCase):
         # Broad selection of types to test.
         types = (list, tuple, dict, int, float, str, bool, complex)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 1: The input is a numpy array.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         array = np.array([1, 2, 3])
         self.assertTrue(vgeneral.validate_ndarray(array))
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 2 and Test 3.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Test each type.
         for dtype in types:
             # Set the type of the object accordingly.
             array = dtype(([1, 3],)) if dtype in types[:3] else dtype(1)
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 2: The input is not a numpy array.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             self.assertFalse(vgeneral.validate_ndarray(array, texcept=False))
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 3: The input is not a numpy array and an exception should be
             # raised.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             with self.assertRaises(TypeError):
                 vgeneral.validate_ndarray(array, texcept=True)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 4: The input is a numpy array with more than 1 dimension.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # A multidimensional array.
         array = np.array([[1, 2, 3], [4, 5, 6]])
@@ -87,9 +87,9 @@ class TestValidateGeneral1D(unittest.TestCase):
         values = list(x for x in range(3))
         array = np.array(values, dtype=int)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 1: The input is a numpy array with the specified shape.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Correct length.
         self.assertTrue(vgeneral.validate_shape(array, 3))
@@ -101,9 +101,9 @@ class TestValidateGeneral1D(unittest.TestCase):
         with self.assertRaises(ValueError):
             vgeneral.validate_shape(array, 2)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 2: The shape is not a positive integer.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Change the shape of the array.
         ts: Union[int, tuple] = (3, 1)
@@ -126,16 +126,16 @@ class TestValidateGeneral1D(unittest.TestCase):
         values = list(x for x in range(3))
 
         for dtype in ntypes:
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 1: The input is a numpy array of the specified type.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             array = np.array(values, dtype=dtype)
             self.assertTrue(vgeneral.validate_type(array, dtype))
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 2: The input is a numpy array of a different type.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             # Change the type of the array.
             tdtype = [x for x in ntypes if x != dtype][0]
@@ -162,9 +162,9 @@ class TestValidateGeneral1D(unittest.TestCase):
             # Set the type of the object accordingly.
             array = np.array(values, dtype=dtype)
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 1: The input is a numpy array of positive elements.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             self.assertTrue(
                 vgeneral.validate_type_negative(array, dtype, zero=True)
@@ -174,9 +174,9 @@ class TestValidateGeneral1D(unittest.TestCase):
             with self.assertRaises(ValueError):
                 vgeneral.validate_type_negative(array, dtype, texcept=True)
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 2: The input is a numpy array of negative elements.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             # Change the sign of the elements.
             array = np.array([-x for x in values], dtype=dtype)
@@ -202,9 +202,9 @@ class TestValidateGeneral1D(unittest.TestCase):
             # Set the type of the object accordingly.
             array = np.array(values, dtype=dtype)
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 1: The input is a numpy array of positive elements.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             self.assertTrue(
                 vgeneral.validate_type_positive(array, dtype, zero=True)
@@ -214,9 +214,9 @@ class TestValidateGeneral1D(unittest.TestCase):
             with self.assertRaises(ValueError):
                 vgeneral.validate_type_positive(array, dtype, texcept=True)
 
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
             # Test 2: The input is a numpy array of negative elements.
-            # ------------------------------------------------------------------
+            # -----------------------------------------------------------------
 
             # Change the sign of the elements.
             array = np.array([-x for x in values], dtype=dtype)
@@ -238,15 +238,15 @@ class TestValidateGeneral1D(unittest.TestCase):
         values = list(x for x in range(3))
         array = np.array(values, dtype=int)
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 1: The input is a numpy with unique elements.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         self.assertTrue(vgeneral.validate_unique(array))
 
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
         # Test 2: The input is a numpy array.
-        # ----------------------------------------------------------------------
+        # ---------------------------------------------------------------------
 
         # Duplicate the values.
         values += values
