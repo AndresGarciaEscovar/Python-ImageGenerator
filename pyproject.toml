@@ -26,6 +26,7 @@ keywords = ["Stochastic", "RSA 1D", "RSA 2D", "SFD", "Images"]
 license = {text = "MIT"}
 dependencies = [
     "numpy==2.4.2",
+    "pyyaml==6.0.1"
 ]
 version = "0.0.1"
 
