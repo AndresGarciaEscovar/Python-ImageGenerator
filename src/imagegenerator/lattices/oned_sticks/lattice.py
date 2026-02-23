@@ -14,7 +14,7 @@ import yaml
 from pathlib import Path
 
 # User defined
-from latexlattices.lattices.oned_sticks import parameters
+from imagegenerator.lattices.oned_sticks import parameters
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Private Interface

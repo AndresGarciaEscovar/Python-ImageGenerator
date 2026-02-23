@@ -14,7 +14,7 @@ import numpy as np
 from typing import Any
 
 # User defined.
-import latexlattices.validate.validate_general as vgeneral
+import imagegenerator.validate.validate_general as vgeneral
 
 # ##############################################################################
 # Global Variables
