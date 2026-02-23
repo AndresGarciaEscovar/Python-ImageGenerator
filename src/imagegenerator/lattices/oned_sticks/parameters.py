@@ -15,8 +15,8 @@ from importlib.resources import files
 from typing import Any
 
 # User defined
-import latexlattices.lattices.oned_sticks as src
-import latexlattices.validate.validate_properties as vproperties
+import imagegenerator.lattices.oned_sticks as src
+import imagegenerator.validate.validate_properties as vproperties
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
