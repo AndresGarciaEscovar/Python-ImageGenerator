@@ -35,7 +35,7 @@ version = "0.0.1"
 
 
 [project.scripts]
-latexlattice = "latexlattices.__main__:main"
+imagegenerator = "imagegenerator.__main__:main"
 
 
 # ---------------------------- Packages to Include --------------------------- #
