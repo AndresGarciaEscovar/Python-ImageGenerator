@@ -21,13 +21,10 @@ authors = [
 ]
 description = "Procedurally creates Tikz images for the different Stochastic Models"
 readme = "README.md"
-requires-python = ">=3.11.6"
+requires-python = ">=3.11.8"
 keywords = ["Images", "RSA 1D", "RSA 2D", "SFD", "Stochastic"]
 license = {text = "MIT"}
-dependencies = [
-    "numpy==2.4.2",
-    "pyyaml==6.0.1"
-]
+dependencies = []
 version = "0.0.1"
 
 
