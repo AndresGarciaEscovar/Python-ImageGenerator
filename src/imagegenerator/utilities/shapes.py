@@ -8,6 +8,9 @@
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
+# Standard Library.
+from typing import Callable
+
 # User.
 import imagegenerator.validate.shapes as vshapes
 
@@ -22,7 +25,7 @@ import imagegenerator.validate.shapes as vshapes
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-def get_coordinate(coordinate: tuple) -> str:
+def get_coordinate(coordinate: tuple, units: str = "cm") -> str:
     """
         From the given coordinate, gets the string representation of the value.
 
@@ -33,14 +36,15 @@ def get_coordinate(coordinate: tuple) -> str:
     # Validate the coordinate.
     vshapes.validate_coordinate(coordinate)
 
-    return f"({', '.join(f'{float(x):+.4f}' for x in coordinate)})"
+    return f"({', '.join(f'{float(x):+.4f}{units}' for x in coordinate)})"
 
 
 def get_tick(
     base: float = 0.5,
-    vertical: float = 1.5,
+    vertical: float = 1.0,
     position: tuple = (0, 0),
     offset: tuple = (0, 0),
+    units: str = "cm"
 ) -> str:
     """
         Gets the code for a tick.
@@ -60,6 +64,9 @@ def get_tick(
 
         :return: A string with the TikZ code for a simple tick.
     """
+    # Auxiliary variables.
+    function: Callable = lambda x: get_coordinate(x, units)
+
     # Get the coordinates.
     positions_base: tuple = (
         (-base / 2.0 + position[0], position[1]),
@@ -70,10 +77,13 @@ def get_tick(
         (position[0] + offset[0], position[1] + offset[1] + vertical),
     )
 
-    positions_base = tuple(get_coordinate(x) for x in positions_base)
-    positions_vertical = tuple(get_coordinate(x) for x in positions_vertical)
+    positions_base = tuple(function(x) for x in positions_base)
+    positions_vertical = tuple(function(x) for x in positions_vertical)
 
-    return f"{' - '.join(positions_base)}\n{' - '.join(positions_vertical)}"
+    return (
+        f"\\draw {' -- '.join(positions_base)};\n"
+        f"\\draw {' -- '.join(positions_vertical)};"
+    )
 
 
 # #############################################################################
@@ -85,9 +95,6 @@ def run() -> None:
     """
         Runs the main code.
     """
-    numbers: tuple = 9, 0
-    coordinate: str = get_coordinate(numbers)
-
     print(get_tick())
 
 

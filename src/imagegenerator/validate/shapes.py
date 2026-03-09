@@ -35,6 +35,3 @@ def validate_coordinate(coordinate: tuple) -> None:
             "There are variables in the coordinate that are not real numbers; "
             "make sure to only give real numbers."
         )
-
-
-def validate_tick
