@@ -45,6 +45,33 @@ def _get_formatted_color(color: tuple) -> str:
 # Functions
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
+def get_circle(
+    radius: float = 1.0,
+    position: tuple = (0, 0),
+    units: str = "cm",
+    color: tuple = ("1.0", "red", "blue", "0.4pt")
+) -> str:
+    """
+        Gets the code for a circle.
+
+        :param radius: A floating point number that represents the radius of
+         a circle. It must be a positive numbers greater than zero.
+
+        :param position: A tuple that represents the position of the middle of
+         the ellipse.
+
+        :param units: A string with the intended units.
+
+        :param color: A tuple indicating the color of the circle, where the
+         first entry represents the opacity, the second entry the color of the
+         outline, the third entry represents the color of the fill, and the
+         last entry represents the thickness of the outline. If one of the
+         values is not used, the default value for it is used.
+
+        :return: A string with the TikZ code for a circle.
+    """
+    return get_ellipse((radius, radius), position, units, color)
+
 
 def get_coordinate(coordinate: tuple, units: str = "cm") -> str:
     """
