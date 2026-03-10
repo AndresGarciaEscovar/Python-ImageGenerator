@@ -58,7 +58,7 @@ def get_circle(
          a circle. It must be a positive numbers greater than zero.
 
         :param position: A tuple that represents the position of the middle of
-         the ellipse.
+         the circle.
 
         :param units: A string with the intended units.
 
