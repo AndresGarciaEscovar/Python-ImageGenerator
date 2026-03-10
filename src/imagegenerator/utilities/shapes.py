@@ -1,7 +1,7 @@
 """
     File that contains the functions to generate the different shapes.
 """
-
+# pylint: disable=too-many-arguments,too-many-positional-arguments
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Imports
@@ -18,6 +18,27 @@ import imagegenerator.validate.shapes as vshapes
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Functions - Auxiliary
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+
+
+def _get_formatted_color(color: tuple) -> str:
+    """
+        Formats the color based on the color tuple.
+
+        :param color: The color 4-tuple that contains the proper entries.
+
+        :return: A string with the formatted prefix to the string.
+    """
+    # Auxiliary variables.
+    prefix = "\\draw[" if color[2] is None else "\\filldraw["
+    options: tuple = ("opacity", "draw", "fill", "line width")
+    dictionary: dict = dict(zip(options, color))
+
+    # Format the keys.
+    for key, value in dictionary.items():
+        if value is not None:
+            prefix += f"{key}={value}, "
+
+    return prefix.strip().strip(",") + "] "
 
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
@@ -39,15 +60,56 @@ def get_coordinate(coordinate: tuple, units: str = "cm") -> str:
     return f"({', '.join(f'{float(x):+.4f}{units}' for x in coordinate)})"
 
 
-def get_box(
+def get_ellipse(
+    radius: tuple = (1.0, 1.0),
+    position: tuple = (0, 0),
+    units: str = "cm",
+    color: tuple = ("1.0", "red", "blue", "0.4pt")
+) -> str:
+    """
+        Gets the code for an ellipse.
+
+        :param radius: A tuple with the semi-major and semi-minor axis lengths.
+         If the axis are the same, they form a circle. They must both be
+         positive numbers greater than zero.
+
+        :param position: A tuple that represents the position of the middle of
+         the ellipse.
+
+        :param units: A string with the intended units.
+
+        :param color: A tuple indicating the color of the ellipse, where the
+         first entry represents the opacity, the second entry the color of the
+         outline, the third entry represents the color of the fill, and the
+         last entry represents the thickness of the outline. If one of the
+         values is not used, the default value for it is used.
+
+        :return: A string with the TikZ code for a simple ellipse.
+    """
+    # Auxiliary variables.
+    function: Callable = lambda x: get_coordinate(x, units)
+
+    # Get the coordinates.
+    ctr: str = function(position)
+
+    # Dictionary from the keys.
+    string: str = f"{ctr} ellipse ({radius[0]}{units} and {radius[1]}{units})"
+
+    # Setup the color.
+    prefix: str = _get_formatted_color(color)
+
+    return f"{prefix}{string};"
+
+
+def get_rectangle(
     length: float = 1.0,
     width: float = 1.0,
     position: tuple = (0, 0),
     units: str = "cm",
-    color: tuple = ("0.4", "blue", "red", "0.4pt")
+    color: tuple = ("1.0", None, None, "0.4pt")
 ) -> str:
     """
-        Gets the code for a box.
+        Gets the code for a simple rectangle.
 
         :param length: The length of the box; must be a positive real number
          greater than zero.
@@ -58,17 +120,18 @@ def get_box(
         :param position: A tuple that represents the position of the middle of
          the box.
 
+        :param units: A string with the intended units.
+
         :param color: A tuple indicating the color of the rectangle, where the
          first entry represents the opacity, the second entry the color of the
          outline, the third entry represents the color of the fill, and the
          last entry represents the thickness of the outline. If one of the
-         values is not used, the default values are used.
+         values is not used, the default value for it is used.
 
-        :return: A string with the TikZ code for a simple tick.
+        :return: A string with the TikZ code for a simple rectangle.
     """
     # Auxiliary variables.
     function: Callable = lambda x: get_coordinate(x, units)
-    options: tuple = ("opacity", "draw", "fill", "line width")
 
     # Get the coordinates.
     corners: tuple = (
@@ -77,17 +140,10 @@ def get_box(
     )
 
     # Dictionary from the keys.
-    dictionary: dict = dict(zip(options, color))
     string: str = ' rectangle '.join(function(x) for x in corners)
 
     # Setup the color.
-    prefix = "\\draw[" if color[2] is None else "\\filldraw["
-
-    for key, value in dictionary.items():
-        if value is not None:
-            prefix += f"{key}={value}, "
-
-    prefix = prefix.strip().strip(",") + "] "
+    prefix: str = _get_formatted_color(color)
 
     return f"{prefix}{string};"
 
@@ -97,7 +153,8 @@ def get_tick(
     vertical: float = 1.0,
     position: tuple = (0, 0),
     offset: tuple = (0, 0),
-    units: str = "cm"
+    units: str = "cm",
+    color: str = "black"
 ) -> str:
     """
         Gets the code for a tick.
@@ -137,8 +194,8 @@ def get_tick(
     positions_vertical = tuple(function(x) for x in positions_vertical)
 
     return (
-        f"\\draw {' -- '.join(positions_base)};\n"
-        f"\\draw {' -- '.join(positions_vertical)};"
+        f"\\draw[color={color}] {' -- '.join(positions_base)};\n"
+        f"\\draw[color={color}] {' -- '.join(positions_vertical)};"
     )
 
 
@@ -151,7 +208,7 @@ def run() -> None:
     """
         Runs the main code.
     """
-    print(get_box())
+    print(get_tick())
 
 
 # -----------------------------------------------------------------------------
