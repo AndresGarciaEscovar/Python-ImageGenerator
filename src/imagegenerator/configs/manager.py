@@ -72,11 +72,11 @@ def get_configuration(name: str) -> str:
         Gets the path of the configuration.
 
         :param name: The name of the requested configuration.
+
+        :return: A string with the path to the json file with the standard
+         configuration for the requested model.
     """
     # Validate the name.
     _validate_name(name)
 
     return f"{_CONFIGS[name]}"
-
-
-get_configuration("asdasd")
