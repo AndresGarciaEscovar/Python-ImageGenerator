@@ -24,8 +24,8 @@ Program to generate images for the lattices of different stochastic models. It
 can be used to present schematics of different possible models.
 """.strip()
 USAGE: str = """
-
-"""
+imagegenerator <name of model> <optional: path to config. file> [-p]
+""".strip()
 
 # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Functions - Auxiliary
