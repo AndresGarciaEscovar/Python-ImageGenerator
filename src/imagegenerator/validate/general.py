@@ -108,12 +108,13 @@ def validate_type_positive(
         :param zero: A boolean flag that indicates if the value can be zero.
          True, if the value can be zero; False, otherwise. False, by default.
 
-        :param exception: A boolean flag that indicates if an exception should be
-         raised if the object is not of the expected type and positive. True, if
-         an exception should be raised; False, otherwise. True, by default.
+        :param exception: A boolean flag that indicates if an exception should
+         be raised if the object is not of the expected type and positive.
+         True, if an exception should be raised; False, otherwise. True, by
+         default.
 
-        :return: True, if the object is a positive number of the specified type;
-         False, otherwise.
+        :return: True, if the object is a positive number of the specified
+         type; False, otherwise.
 
         :raises ValueError: If the object is not a positive number or zero, the
          latter if the zero option is set to True, and exception is True.
