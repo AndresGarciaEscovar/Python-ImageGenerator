@@ -3,25 +3,26 @@
     sticks lattice.
 """
 
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 # Imports
-# ##############################################################################
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
-# General
-import yaml
-
+# Standard Library.
 from importlib.resources import files
 from typing import Any
 
+# Third-party.
+import yaml
+
 # User defined
 import imagegenerator.lattices.oned_sticks as src
-import imagegenerator.validate.validate_properties as vproperties
+import imagegenerator.validate.properties as vproperties
 
 
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
-# Private Interface
-# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Global Variables
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 # Dictionary structure with the keys and types of the parameters.
@@ -58,14 +59,9 @@ _TEMPLATE = {
 }
 
 
-# ##############################################################################
-# Functions
-# ##############################################################################
-
-
-# ------------------------------------------------------------------------------
-# '_validate' Functions
-# ------------------------------------------------------------------------------
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+# Functions - Auxiliary
+# $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 def _validate_general(dictionary: Any) -> None:
@@ -79,9 +75,6 @@ def _validate_general(dictionary: Any) -> None:
 
         :raise ValueError: If the values of the dictionary are not valid.
     """
-    # Global variables.
-    global _TEMPLATE
-
     # Must be a dictionary.
     if not isinstance(dictionary, dict):
         raise TypeError(
